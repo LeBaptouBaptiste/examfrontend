@@ -31,27 +31,54 @@ export default function UserPage() {
 
 	if (error)
 		return (
-			<main className="min-h-screen flex flex-col items-center justify-center bg-gray-950 text-gray-100 p-6 text-center">
-				<p className="text-fuchsia-400 font-semibold mb-2">Erreur réseau</p>
-				<p className="text-gray-400 mb-6">{error}</p>
+			<main
+				className="min-h-screen flex flex-col items-center justify-center 
+			bg-gray-100 text-gray-900 
+			dark:bg-gray-950 dark:text-gray-100 
+			p-6 text-center transition-colors duration-300"
+			>
+				<p className="text-fuchsia-600 dark:text-fuchsia-400 font-semibold mb-2">
+					Erreur réseau
+				</p>
+				<p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
+
 				<button
 					onClick={() => location.reload()}
-					className="px-4 py-2 bg-fuchsia-600 hover:bg-fuchsia-700 rounded-lg text-sm font-medium transition-colors"
+					className="px-4 py-2 rounded-lg text-sm font-medium transition-colors
+					bg-fuchsia-600 hover:bg-fuchsia-700 text-white
+					shadow-md shadow-fuchsia-900/20"
 				>
 					Recharger
 				</button>
 			</main>
 		);
 
-	return <main>{user ? <UserDetails user={user} /> : <Loading />}</main>;
+	return (
+		<main
+			className="min-h-screen 
+		bg-gray-100 text-gray-900 
+		dark:bg-gray-950 dark:text-gray-100 
+		transition-colors duration-300"
+		>
+			<button
+				onClick={() => history.back()}
+				className="m-4 px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                bg-fuchsia-600 hover:bg-fuchsia-700 text-white
+                shadow-md shadow-fuchsia-900/20 hover:cursor-pointer"
+			>
+				← Retour
+			</button>
+			{user ? <UserDetails user={user} /> : <Loading />}
+		</main>
+	);
 }
 
 async function fetchUser(id: number) {
-    try {
-        const response = await fetch(`https://dummyjson.com/users/${id}`);
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        throw new Error('Failed to fetch user data');
-    }
+	try {
+		const response = await fetch(`https://dummyjson.com/users/${id}`);
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		throw new Error("Failed to fetch user data");
+	}
 }

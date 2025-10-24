@@ -1,28 +1,71 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { userListInterface } from "@/types/userInterface";
 import UserCard from "@/components/userCard";
 
 export default function UserList({ users }: { users: userListInterface }) {
 	const [filterText, setFilterText] = useState("");
-	const [filteredUsers, setFilteredUsers] = useState(users.users);
-	const [showedUsers, setShowedUsers] = useState(users.users);
+	const [sortOption, setSortOption] = useState("base");
 	const [page, setPage] = useState(1);
+	const [transitioning, setTransitioning] = useState(false);
 	const limit = 10;
 
-	useEffect(() => {
-		setShowedUsers(users.users.slice((page - 1) * limit, page * limit));
-	}, [users]);
+	const filteredUsers = useMemo(() => {
+		if (!filterText.trim()) return users.users;
+		const lower = filterText.toLowerCase();
+		return users.users.filter((user) =>
+			`${user.firstName} ${user.lastName} ${user.email}`
+				.toLowerCase()
+				.includes(lower)
+		);
+	}, [users, filterText]);
 
-	useEffect(() => {
-		setShowedUsers(filteredUsers.slice((page - 1) * limit, page * limit));
-	}, [filteredUsers, page]);
+	const sortedUsers = useMemo(() => {
+		const copy = [...filteredUsers];
+		switch (sortOption) {
+			case "nameAsc":
+				return copy.sort((a, b) => a.lastName.localeCompare(b.lastName));
+			case "nameDesc":
+				return copy.sort((a, b) => b.lastName.localeCompare(a.lastName));
+			case "firstNameAsc":
+				return copy.sort((a, b) => a.firstName.localeCompare(b.firstName));
+			case "firstNameDesc":
+				return copy.sort((a, b) => b.firstName.localeCompare(a.firstName));
+			case "ageAsc":
+				return copy.sort((a, b) => a.age - b.age);
+			case "ageDesc":
+				return copy.sort((a, b) => b.age - a.age);
+			default:
+				return copy;
+		}
+	}, [filteredUsers, sortOption]);
+
+	const paginatedUsers = useMemo(() => {
+		const start = (page - 1) * limit;
+		return sortedUsers.slice(start, start + limit);
+	}, [sortedUsers, page]);
+
+	const totalPages = Math.ceil(sortedUsers.length / limit);
+
+	const changePage = (newPage: number) => {
+		setTransitioning(true);
+		setTimeout(() => {
+			setPage(newPage);
+			setTransitioning(false);
+		}, 200); // durée = la même que l’animation CSS
+	};
+
 
 	return (
-		<section className="bg-gray-950 text-gray-100 py-16 px-6">
+		<section
+			className="min-h-screen py-16 px-6 
+				bg-gray-100 text-gray-900 
+				dark:bg-gray-950 dark:text-gray-100 
+				transition-colors duration-300"
+		>
 			<div className="max-w-8xl mx-auto">
-				<h2 className="text-3xl font-bold text-fuchsia-400 mb-10 text-center">
+				<h2 className="text-3xl font-bold text-fuchsia-600 dark:text-fuchsia-400 mb-10 text-center">
 					Liste des utilisateurs
 				</h2>
 
@@ -30,60 +73,38 @@ export default function UserList({ users }: { users: userListInterface }) {
 				<div className="mb-12 flex justify-center">
 					<input
 						type="text"
-						placeholder="Rechercher par nom, prenom ou email..."
+						placeholder="Rechercher par nom, prénom ou email..."
 						value={filterText}
 						onChange={(e) => {
-							const text = e.target.value;
-							setFilterText(text);
-							const filtered = users.users.filter((user) =>
-								`${user.firstName} ${user.lastName} ${user.email}`
-									.toLowerCase()
-									.includes(text.toLowerCase())
-							);
-							setFilteredUsers(filtered);
+							setFilterText(e.target.value);
+							setPage(1);
 						}}
-						className="w-full max-w-md px-4 py-2 border border-gray-700 rounded-lg bg-gray-900 text-gray-100 focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
+						className="w-full max-w-md px-4 py-2 rounded-lg border 
+							border-gray-300 dark:border-gray-700 
+							bg-white dark:bg-gray-900 
+							text-gray-900 dark:text-gray-100 
+							placeholder-gray-500 dark:placeholder-gray-400
+							focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
 					/>
 				</div>
 
 				{/* Tri */}
 				<div className="mb-8 flex justify-end">
-					<label className="mr-4 text-sm text-gray-400">Trier par :</label>
+					<label className="mr-4 text-sm text-gray-600 dark:text-gray-400">
+						Trier par :
+					</label>
 					<select
+						value={sortOption}
 						onChange={(e) => {
-							if (e.target.value === "base") {
-								setFilteredUsers(users.users);
-							} else if (e.target.value === "nameAsc") {
-								setFilteredUsers((prev) =>
-									[...prev].sort((a, b) => a.lastName.localeCompare(b.lastName))
-								);
-							} else if (e.target.value === "ageAsc") {
-								setFilteredUsers((prev) =>
-									[...prev].sort((a, b) => a.age - b.age)
-								);
-							} else if (e.target.value === "firstNameAsc") {
-								setFilteredUsers((prev) =>
-									[...prev].sort((a, b) =>
-										a.firstName.localeCompare(b.firstName)
-									)
-								);
-							} else if (e.target.value === "nameDesc") {
-								setFilteredUsers((prev) =>
-									[...prev].sort((a, b) => b.lastName.localeCompare(a.lastName))
-								);
-							} else if (e.target.value === "ageDesc") {
-								setFilteredUsers((prev) =>
-									[...prev].sort((a, b) => b.age - a.age)
-								);
-							} else if (e.target.value === "firstNameDesc") {
-								setFilteredUsers((prev) =>
-									[...prev].sort((a, b) =>
-										b.firstName.localeCompare(a.firstName)
-									)
-								);
-							}
+							setSortOption(e.target.value);
+							setPage(1);
 						}}
-						className="px-3 py-2 border border-gray-700 rounded-lg bg-gray-900 text-gray-100 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 hover:cursor-pointer"
+						className="px-3 py-2 rounded-lg border 
+							border-gray-300 dark:border-gray-700 
+							bg-white dark:bg-gray-900 
+							text-gray-900 dark:text-gray-100 
+							focus:outline-none focus:ring-2 focus:ring-fuchsia-500 
+							hover:cursor-pointer transition-colors duration-300"
 					>
 						<option value="base">Sélectionner</option>
 						<option value="nameAsc">Nom croissant</option>
@@ -95,59 +116,52 @@ export default function UserList({ users }: { users: userListInterface }) {
 					</select>
 				</div>
 
-				{/* Grille responsive */}
-				<div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-8">
-					{showedUsers.map((user) => (
-						<UserCard
-							key={user.id}
-							user={user}
-						/>
+				{/* Grille avec transition */}
+				<div
+					className={`grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-8 transition-all duration-200 ease-in-out ${
+						transitioning
+							? "opacity-0 translate-x-4"
+							: "opacity-100 translate-x-0"
+					}`}
+				>
+					{paginatedUsers.map((user) => (
+						<UserCard key={user.id} user={user} />
 					))}
 				</div>
 			</div>
+
+			{/* Pagination */}
 			<div className="mt-12 flex flex-col items-center gap-4">
-				{/* Pagination principale */}
 				<div className="flex items-center gap-3">
 					<button
-						onClick={() => {
-							if (page > 1) {
-								const newPage = page - 1;
-								setPage(newPage);
-								setShowedUsers(
-									filteredUsers.slice((newPage - 1) * limit, newPage * limit)
-								);
-							}
-						}}
+						onClick={() => changePage(Math.max(1, page - 1))}
 						disabled={page === 1}
 						className={`px-4 py-2 rounded-lg font-medium transition-all ${
 							page === 1
-								? "bg-gray-800 text-gray-500 cursor-not-allowed"
+								? "bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed"
 								: "bg-fuchsia-600 hover:bg-fuchsia-700 text-white shadow-md shadow-fuchsia-900/20 hover:cursor-pointer"
 						}`}
 					>
 						← Précédent
 					</button>
 
-					{/* Indicateur de page */}
-					<div className="px-4 py-2 text-sm font-semibold text-gray-300 bg-gray-800 rounded-lg border border-gray-700">
-						Page <span className="text-fuchsia-400">{page}</span> /{" "}
-						{Math.ceil(filteredUsers.length / limit)}
+					<div
+						className="px-4 py-2 text-sm font-semibold 
+							text-gray-700 dark:text-gray-300 
+							bg-gray-200 dark:bg-gray-800 
+							rounded-lg border border-gray-300 dark:border-gray-700"
+					>
+						Page{" "}
+						<span className="text-fuchsia-600 dark:text-fuchsia-400">{page}</span> /{" "}
+						{totalPages}
 					</div>
 
 					<button
-						onClick={() => {
-							if (page * limit < filteredUsers.length) {
-								const newPage = page + 1;
-								setPage(newPage);
-								setShowedUsers(
-									filteredUsers.slice((newPage - 1) * limit, newPage * limit)
-								);
-							}
-						}}
-						disabled={page * limit >= filteredUsers.length}
+						onClick={() => changePage(Math.max(1, page + 1))}
+						disabled={page === totalPages}
 						className={`px-4 py-2 rounded-lg font-medium transition-all ${
-							page * limit >= filteredUsers.length
-								? "bg-gray-800 text-gray-500 cursor-not-allowed"
+							page === totalPages
+								? "bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed"
 								: "bg-fuchsia-600 hover:bg-fuchsia-700 text-white shadow-md shadow-fuchsia-900/20 hover:cursor-pointer"
 						}`}
 					>
@@ -155,15 +169,10 @@ export default function UserList({ users }: { users: userListInterface }) {
 					</button>
 				</div>
 
-				{/* Barre de progression visuelle */}
-				<div className="w-64 h-2 bg-gray-800 rounded-full overflow-hidden">
+				<div className="w-64 h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
 					<div
 						className="h-full bg-fuchsia-500 transition-all duration-500"
-						style={{
-							width: `${
-								(page / Math.ceil(filteredUsers.length / limit)) * 100
-							}%`,
-						}}
+						style={{ width: `${(page / totalPages) * 100}%` }}
 					/>
 				</div>
 			</div>
