@@ -39,7 +39,7 @@ interface crypto {
     network: string;
 }
 
-interface user {
+interface userInterface {
     id: number;
     firstName: string;
     lastName: string;
@@ -70,11 +70,11 @@ interface user {
     role: string;
 }
 
-interface userList {
-    users: user[];
+interface userListInterface {
+    users: userInterface[];
     total: number;
     skip: number;
     limit: number;
 }
 
-export type { user, userList };
+export type { userInterface, userListInterface };

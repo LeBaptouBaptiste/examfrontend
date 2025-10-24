@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { user, userList } from "@/app/types/userInterface";
+import { userListInterface } from "@/types/userInterface";
+import UserList from "./components/userList";
 
 export default function Home() {
-	const [users, setUsers] = useState<userList>();
+	const [users, setUsers] = useState<userListInterface>();
 
 	useEffect(() => {
 		fetchData().then((data) => setUsers(data));
@@ -12,14 +13,7 @@ export default function Home() {
 
 	return (
 		<main>
-			<h1>Welcome to Next.js!</h1>
-			{users?.users.map((user) => (
-				<div key={user.id}>
-					<h2>
-						{user.firstName} {user.lastName}
-					</h2>
-				</div>
-			))}
+			<UserList users={users!} />
 		</main>
 	);
 }
