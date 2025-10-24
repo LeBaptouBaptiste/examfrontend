@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function ThemeButton() {
 	const [theme, setTheme] = useState<"light" | "dark" | null>(null);
@@ -21,13 +21,13 @@ export default function ThemeButton() {
 		}
 	}, []);
 
-	const toggleTheme = () => {
+	const toggleTheme = useCallback(() => {
 		if (!theme) return;
 		const newTheme = theme === "dark" ? "light" : "dark";
 		setTheme(newTheme);
 		document.documentElement.classList.toggle("dark", newTheme === "dark");
 		localStorage.setItem("theme", newTheme);
-	};
+	}, [theme]);
 
 	if (!theme) return null;
 

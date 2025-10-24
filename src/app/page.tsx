@@ -1,28 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { userListInterface } from "@/types/userInterface";
 import UserList from "@/components/userList";
 import Loading from "@/components/Loading";
+import { useUsers } from "@/hooks/useUsers";
 
 export default function Home() {
-	const [users, setUsers] = useState<userListInterface | null>(null);
-	const [error, setError] = useState<string | null>(null);
-	const [loading, setLoading] = useState(true);
-
-	useEffect(() => {
-		fetchData()
-			.then((data) => {
-				setUsers(data);
-				setError(null);
-			})
-			.catch(() => {
-				setError(
-					"Impossible de charger les utilisateurs. Vérifie ta connexion ou réessaie plus tard."
-				);
-			})
-			.finally(() => setLoading(false));
-	}, []);
+	const { userList, loading, error } = useUsers();
 
 	if (loading) return <Loading />;
 
@@ -55,17 +38,7 @@ export default function Home() {
         dark:bg-gray-950 dark:text-gray-100 
         transition-colors duration-300"
 		>
-			{users ? <UserList users={users} /> : <Loading />}
+			{userList ? <UserList /> : <Loading />}
 		</main>
 	);
-}
-
-async function fetchData() {
-	try {
-		const res = await fetch("https://dummyjson.com/users?limit=1000");
-		if (!res.ok) throw new Error("Erreur de réseau");
-		return await res.json();
-	} catch (err) {
-		throw err;
-	}
 }

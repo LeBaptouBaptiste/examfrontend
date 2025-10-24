@@ -73,8 +73,8 @@ interface userInterface {
 interface userListInterface {
     users: userInterface[];
     total: number;
-    skip: number;
-    limit: number;
+    skip?: number;
+    limit?: number;
 }
 
 export type { userInterface, userListInterface };

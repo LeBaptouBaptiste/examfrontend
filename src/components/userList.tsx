@@ -1,61 +1,21 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { userListInterface } from "@/types/userInterface";
+import { useCallback, useState } from "react";
 import UserCard from "@/components/userCard";
+import { useUsers } from "@/hooks/useUsers";
 
-export default function UserList({ users }: { users: userListInterface }) {
-	const [filterText, setFilterText] = useState("");
-	const [sortOption, setSortOption] = useState("base");
-	const [page, setPage] = useState(1);
+export default function UserList() {
 	const [transitioning, setTransitioning] = useState(false);
-	const limit = 10;
 
-	const filteredUsers = useMemo(() => {
-		if (!filterText.trim()) return users.users;
-		const lower = filterText.toLowerCase();
-		return users.users.filter((user) =>
-			`${user.firstName} ${user.lastName} ${user.email}`
-				.toLowerCase()
-				.includes(lower)
-		);
-	}, [users, filterText]);
+	const {setFilterText, filterText, sortOption, setSortOption, setPage, page, paginatedUsers, totalPages, favoredUsers, toggleFavoredUser} = useUsers();
 
-	const sortedUsers = useMemo(() => {
-		const copy = [...filteredUsers];
-		switch (sortOption) {
-			case "nameAsc":
-				return copy.sort((a, b) => a.lastName.localeCompare(b.lastName));
-			case "nameDesc":
-				return copy.sort((a, b) => b.lastName.localeCompare(a.lastName));
-			case "firstNameAsc":
-				return copy.sort((a, b) => a.firstName.localeCompare(b.firstName));
-			case "firstNameDesc":
-				return copy.sort((a, b) => b.firstName.localeCompare(a.firstName));
-			case "ageAsc":
-				return copy.sort((a, b) => a.age - b.age);
-			case "ageDesc":
-				return copy.sort((a, b) => b.age - a.age);
-			default:
-				return copy;
-		}
-	}, [filteredUsers, sortOption]);
-
-	const paginatedUsers = useMemo(() => {
-		const start = (page - 1) * limit;
-		return sortedUsers.slice(start, start + limit);
-	}, [sortedUsers, page]);
-
-	const totalPages = Math.ceil(sortedUsers.length / limit);
-
-	const changePage = (newPage: number) => {
+	const changePage = useCallback((newPage: number) => {
 		setTransitioning(true);
 		setTimeout(() => {
 			setPage(newPage);
 			setTransitioning(false);
 		}, 200); // durée = la même que l’animation CSS
-	};
-
+	}, [setPage]);
 
 	return (
 		<section
@@ -125,7 +85,7 @@ export default function UserList({ users }: { users: userListInterface }) {
 					}`}
 				>
 					{paginatedUsers.map((user) => (
-						<UserCard key={user.id} user={user} />
+						<UserCard key={user.id} user={user} isFav={favoredUsers.some(u => u.id === user.id)} onToggleFavorite={toggleFavoredUser}/>
 					))}
 				</div>
 			</div>
