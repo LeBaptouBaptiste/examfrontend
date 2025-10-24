@@ -20,9 +20,14 @@ export default function UserList({ users }: { users: userListInterface }) {
 	}, [filteredUsers, page]);
 
 	return (
-		<section className="bg-gray-950 text-gray-100 py-16 px-6">
+		<section
+			className="min-h-screen py-16 px-6 
+		bg-gray-100 text-gray-900 
+		dark:bg-gray-950 dark:text-gray-100 
+		transition-colors duration-300"
+		>
 			<div className="max-w-8xl mx-auto">
-				<h2 className="text-3xl font-bold text-fuchsia-400 mb-10 text-center">
+				<h2 className="text-3xl font-bold text-fuchsia-600 dark:text-fuchsia-400 mb-10 text-center">
 					Liste des utilisateurs
 				</h2>
 
@@ -30,7 +35,7 @@ export default function UserList({ users }: { users: userListInterface }) {
 				<div className="mb-12 flex justify-center">
 					<input
 						type="text"
-						placeholder="Rechercher par nom, prenom ou email..."
+						placeholder="Rechercher par nom, prénom ou email..."
 						value={filterText}
 						onChange={(e) => {
 							const text = e.target.value;
@@ -42,13 +47,20 @@ export default function UserList({ users }: { users: userListInterface }) {
 							);
 							setFilteredUsers(filtered);
 						}}
-						className="w-full max-w-md px-4 py-2 border border-gray-700 rounded-lg bg-gray-900 text-gray-100 focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
+						className="w-full max-w-md px-4 py-2 rounded-lg border 
+						border-gray-300 dark:border-gray-700 
+						bg-white dark:bg-gray-900 
+						text-gray-900 dark:text-gray-100 
+						placeholder-gray-500 dark:placeholder-gray-400
+						focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
 					/>
 				</div>
 
 				{/* Tri */}
 				<div className="mb-8 flex justify-end">
-					<label className="mr-4 text-sm text-gray-400">Trier par :</label>
+					<label className="mr-4 text-sm text-gray-600 dark:text-gray-400">
+						Trier par :
+					</label>
 					<select
 						onChange={(e) => {
 							if (e.target.value === "base") {
@@ -83,7 +95,12 @@ export default function UserList({ users }: { users: userListInterface }) {
 								);
 							}
 						}}
-						className="px-3 py-2 border border-gray-700 rounded-lg bg-gray-900 text-gray-100 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 hover:cursor-pointer"
+						className="px-3 py-2 rounded-lg border 
+						border-gray-300 dark:border-gray-700 
+						bg-white dark:bg-gray-900 
+						text-gray-900 dark:text-gray-100 
+						focus:outline-none focus:ring-2 focus:ring-fuchsia-500 
+						hover:cursor-pointer transition-colors duration-300"
 					>
 						<option value="base">Sélectionner</option>
 						<option value="nameAsc">Nom croissant</option>
@@ -105,8 +122,9 @@ export default function UserList({ users }: { users: userListInterface }) {
 					))}
 				</div>
 			</div>
+
+			{/* Pagination */}
 			<div className="mt-12 flex flex-col items-center gap-4">
-				{/* Pagination principale */}
 				<div className="flex items-center gap-3">
 					<button
 						onClick={() => {
@@ -121,17 +139,24 @@ export default function UserList({ users }: { users: userListInterface }) {
 						disabled={page === 1}
 						className={`px-4 py-2 rounded-lg font-medium transition-all ${
 							page === 1
-								? "bg-gray-800 text-gray-500 cursor-not-allowed"
+								? "bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed"
 								: "bg-fuchsia-600 hover:bg-fuchsia-700 text-white shadow-md shadow-fuchsia-900/20 hover:cursor-pointer"
 						}`}
 					>
 						← Précédent
 					</button>
 
-					{/* Indicateur de page */}
-					<div className="px-4 py-2 text-sm font-semibold text-gray-300 bg-gray-800 rounded-lg border border-gray-700">
-						Page <span className="text-fuchsia-400">{page}</span> /{" "}
-						{Math.ceil(filteredUsers.length / limit)}
+					<div
+						className="px-4 py-2 text-sm font-semibold 
+					text-gray-700 dark:text-gray-300 
+					bg-gray-200 dark:bg-gray-800 
+					rounded-lg border border-gray-300 dark:border-gray-700"
+					>
+						Page{" "}
+						<span className="text-fuchsia-600 dark:text-fuchsia-400">
+							{page}
+						</span>{" "}
+						/ {Math.ceil(filteredUsers.length / limit)}
 					</div>
 
 					<button
@@ -147,7 +172,7 @@ export default function UserList({ users }: { users: userListInterface }) {
 						disabled={page * limit >= filteredUsers.length}
 						className={`px-4 py-2 rounded-lg font-medium transition-all ${
 							page * limit >= filteredUsers.length
-								? "bg-gray-800 text-gray-500 cursor-not-allowed"
+								? "bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed"
 								: "bg-fuchsia-600 hover:bg-fuchsia-700 text-white shadow-md shadow-fuchsia-900/20 hover:cursor-pointer"
 						}`}
 					>
@@ -155,8 +180,8 @@ export default function UserList({ users }: { users: userListInterface }) {
 					</button>
 				</div>
 
-				{/* Barre de progression visuelle */}
-				<div className="w-64 h-2 bg-gray-800 rounded-full overflow-hidden">
+				{/* Barre de progression */}
+				<div className="w-64 h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
 					<div
 						className="h-full bg-fuchsia-500 transition-all duration-500"
 						style={{
