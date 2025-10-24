@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { userInterface, userListInterface } from "@/types/userInterface";
 
 export function useUsers() {
@@ -13,19 +13,24 @@ export function useUsers() {
 
 	const [favoredUsers, setFavoredUsers] = useState<userInterface[]>([]);
 
+	const fetchUsers = useCallback(async () => {
+		try {
+			const res = await fetch(`https://dummyjson.com/users?limit=1000`);
+			if (!res.ok) throw new Error("Erreur réseau");
+			const data = await res.json();
+			setUsers(data);
+		} catch (err: any) {
+			setError(err.message || "Erreur inconnue");
+		} finally {
+			setLoading(false);
+		}
+	}, []);
+
 	useEffect(() => {
 		setLoading(true);
 		setError(null);
-		fetchUsers()
-			.then((data) => {
-				setUsers(data);
-				setLoading(false);
-			})
-			.catch((err) => {
-				setError(err);
-				setLoading(false);
-			});
-	}, [page]);
+		fetchUsers();
+	}, [fetchUsers, page]);
 
 	const filteredUsers = useMemo(() => {
 		if (userList === null) return [];
@@ -65,33 +70,22 @@ export function useUsers() {
 
 	const totalPages = Math.ceil(sortedUsers.length / limit);
 
-	const toggleFavoredUser =(user: userInterface) => {
+	const toggleFavoredUser = useCallback((user: userInterface) => {
 		setFavoredUsers((prev) => {
-			console.log("Current favored users before toggle:", prev);
-
 			const exists = prev.some((u) => u.id === user.id);
-			console.log("User exists in favored list:", exists);
-
 			const updated = exists
 				? prev.filter((u) => u.id !== user.id)
 				: [...prev, user];
 
-			console.log("Updated favored users list:", updated);
-
 			localStorage.setItem("favUsers", JSON.stringify(updated));
-
 			return updated;
 		});
-	};
+	}, []);
 
 	useEffect(() => {
 		const favUsers = JSON.parse(localStorage.getItem("favUsers") || "[]");
 		if (Array.isArray(favUsers)) setFavoredUsers(favUsers);
 	}, []);
-
-	useEffect(() => {
-		console.log("🔥 favoredUsers updated:", favoredUsers);
-	}, [favoredUsers]);
 
 	return {
 		userList,
@@ -110,16 +104,4 @@ export function useUsers() {
 		favoredUsers,
 		toggleFavoredUser,
 	};
-}
-
-async function fetchUsers() {
-	try {
-		const res = await fetch(`https://dummyjson.com/users?limit=1000`);
-		if (!res.ok) throw new Error("Erreur réseau");
-
-		const data = await res.json();
-		return data;
-	} catch (err: any) {
-		throw err.message || "Erreur inconnue";
-	}
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import UserCard from "@/components/userCard";
 import { useUsers } from "@/hooks/useUsers";
 
@@ -9,13 +9,13 @@ export default function UserList() {
 
 	const {setFilterText, filterText, sortOption, setSortOption, setPage, page, paginatedUsers, totalPages, favoredUsers, toggleFavoredUser} = useUsers();
 
-	const changePage = (newPage: number) => {
+	const changePage = useCallback((newPage: number) => {
 		setTransitioning(true);
 		setTimeout(() => {
 			setPage(newPage);
 			setTransitioning(false);
 		}, 200); // durée = la même que l’animation CSS
-	};
+	}, [setPage]);
 
 	return (
 		<section
