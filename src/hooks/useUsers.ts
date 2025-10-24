@@ -20,9 +20,32 @@ export function useUsers() {
 			const data = await res.json();
 			setUsers(data);
 		} catch (err: any) {
-			setError(err.message || "Erreur inconnue");
+			const newUserList = fetchLocalUsers();
+			if (newUserList != null) {
+				setUsers(newUserList);
+			} else {
+				setError(err.message || "Erreur inconnue");
+			}
 		} finally {
 			setLoading(false);
+		}
+	}, []);
+
+	const fetchLocalUsers = useCallback(() => {
+		const storedUsers = localStorage.getItem("favUsers");
+		if (storedUsers) {
+			try {
+				const parsedUsers: userInterface[] = JSON.parse(storedUsers);
+				const newUserList: userListInterface = {
+					users: parsedUsers,
+					total: parsedUsers.length,
+				};
+				return newUserList;
+			} catch {
+				console.error(
+					"Erreur lors de la lecture des utilisateurs favoris depuis le localStorage"
+				);
+			}
 		}
 	}, []);
 
