@@ -162,7 +162,7 @@ src/
 
 ## WebSite
  - This app is available on Vercel,
- - You can see it on [examfrontend-nu.vercel.app]
+ - You can see it on [https://examfrontend-nu.vercel.app/]
 
 ## 💬 Author
 
