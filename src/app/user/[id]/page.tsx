@@ -47,7 +47,11 @@ export default function UserPage() {
 }
 
 async function fetchUser(id: number) {
-	const response = await fetch(`https://dummyjson.com/users/${id}`);
-	const data = await response.json();
-	return data;
+    try {
+        const response = await fetch(`https://dummyjson.com/users/${id}`);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        throw new Error('Failed to fetch user data');
+    }
 }
