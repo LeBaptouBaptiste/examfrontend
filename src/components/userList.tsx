@@ -8,6 +8,7 @@ export default function UserList({ users }: { users: userListInterface }) {
 	const [filterText, setFilterText] = useState("");
 	const [sortOption, setSortOption] = useState("base");
 	const [page, setPage] = useState(1);
+	const [transitioning, setTransitioning] = useState(false);
 	const limit = 10;
 
 	const filteredUsers = useMemo(() => {
@@ -46,6 +47,15 @@ export default function UserList({ users }: { users: userListInterface }) {
 	}, [sortedUsers, page]);
 
 	const totalPages = Math.ceil(sortedUsers.length / limit);
+
+	const changePage = (newPage: number) => {
+		setTransitioning(true);
+		setTimeout(() => {
+			setPage(newPage);
+			setTransitioning(false);
+		}, 200); // durée = la même que l’animation CSS
+	};
+
 
 	return (
 		<section
@@ -106,8 +116,14 @@ export default function UserList({ users }: { users: userListInterface }) {
 					</select>
 				</div>
 
-				{/* Grille responsive */}
-				<div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-8">
+				{/* Grille avec transition */}
+				<div
+					className={`grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-8 transition-all duration-200 ease-in-out ${
+						transitioning
+							? "opacity-0 translate-x-4"
+							: "opacity-100 translate-x-0"
+					}`}
+				>
 					{paginatedUsers.map((user) => (
 						<UserCard key={user.id} user={user} />
 					))}
@@ -118,7 +134,7 @@ export default function UserList({ users }: { users: userListInterface }) {
 			<div className="mt-12 flex flex-col items-center gap-4">
 				<div className="flex items-center gap-3">
 					<button
-						onClick={() => setPage((p) => Math.max(1, p - 1))}
+						onClick={() => changePage(Math.max(1, page - 1))}
 						disabled={page === 1}
 						className={`px-4 py-2 rounded-lg font-medium transition-all ${
 							page === 1
@@ -141,7 +157,7 @@ export default function UserList({ users }: { users: userListInterface }) {
 					</div>
 
 					<button
-						onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+						onClick={() => changePage(Math.max(1, page + 1))}
 						disabled={page === totalPages}
 						className={`px-4 py-2 rounded-lg font-medium transition-all ${
 							page === totalPages

@@ -60,6 +60,14 @@ export default function UserPage() {
 		dark:bg-gray-950 dark:text-gray-100 
 		transition-colors duration-300"
 		>
+			<button
+				onClick={() => history.back()}
+				className="m-4 px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                bg-fuchsia-600 hover:bg-fuchsia-700 text-white
+                shadow-md shadow-fuchsia-900/20 hover:cursor-pointer"
+			>
+				← Retour
+			</button>
 			{user ? <UserDetails user={user} /> : <Loading />}
 		</main>
 	);
