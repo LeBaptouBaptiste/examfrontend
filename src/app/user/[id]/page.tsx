@@ -1,26 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { userListInterface } from "@/types/userInterface";
-import UserList from "@/components/userList";
+import { useParams } from "next/navigation";
+import { userInterface } from "@/types/userInterface";
 import Loading from "@/components/Loading";
+import UserDetails from "@/components/userDetails";
 
-export default function Home() {
-	const [users, setUsers] = useState<userListInterface | null>(null);
+export default function UserPage() {
+	const { id } = useParams<{ id: string }>();
+	const [user, setUser] = useState<userInterface | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetchData()
+		setLoading(true);
+		fetchUser(parseInt(id))
 			.then((data) => {
-				setUsers(data);
+				setUser(data);
 				setError(null);
 			})
 			.catch(() => {
-				setError("Impossible de charger les utilisateurs. Vérifie ta connexion ou réessaie plus tard.");
+				setError(
+					"Impossible de charger les détails de l'utilisateur. Vérifie ta connexion ou réessaie plus tard."
+				);
 			})
 			.finally(() => setLoading(false));
-	}, []);
+	}, [id]);
 
 	if (loading) return <Loading />;
 
@@ -38,15 +43,11 @@ export default function Home() {
 			</main>
 		);
 
-	return (
-		<main className="min-h-screen bg-gray-950 text-gray-100">
-			{users ? <UserList users={users}/> : <Loading/>}
-		</main>
-	);
+	return <main>{user ? <UserDetails user={user} /> : <Loading />}</main>;
 }
 
-async function fetchData() {
-	const res = await fetch("https://dummyjson.com/users");
-	if (!res.ok) throw new Error("Erreur de réseau");
-	return res.json();
+async function fetchUser(id: number) {
+	const response = await fetch(`https://dummyjson.com/users/${id}`);
+	const data = await response.json();
+	return data;
 }
