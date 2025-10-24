@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import ThemeButton from "@/components/ThemeButton";
 import AppErrorBoundary from "@/components/AppErrorBoundary";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
 	title: "Examen Frontend",
@@ -20,6 +21,22 @@ export default function RootLayout({
 				<AppErrorBoundary>
 					{children}
 					<ThemeButton />
+					<Toaster
+						position="top-right"
+						toastOptions={{
+							style: {
+								background: "#1f1f1f",
+								color: "#fff",
+								border: "1px solid #333",
+							},
+							success: {
+								iconTheme: { primary: "#d946ef", secondary: "#fff" },
+							},
+							error: {
+								style: { background: "#7f1d1d", border: "1px solid #ef4444" },
+							},
+						}}
+					/>
 				</AppErrorBoundary>
 			</body>
 		</html>

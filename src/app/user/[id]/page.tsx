@@ -5,6 +5,7 @@ import Loading from "@/components/Loading";
 import UserDetails from "@/components/userDetails";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function UserClient() {
 	const { id } = useParams();
@@ -16,7 +17,6 @@ export default function UserClient() {
 	useEffect(() => {
 		async function loadUser() {
 			try {
-				// 1. D'abord, chercher dans le localStorage
 				const favUsers = JSON.parse(localStorage.getItem("favUsers") || "[]");
 				const cachedUser = favUsers.find((u: userInterface) => u.id === Number(id));
 				
@@ -24,17 +24,17 @@ export default function UserClient() {
 					console.log("✅ User chargé depuis le localStorage:", cachedUser);
 					setCurrentUser(cachedUser);
 					setLoading(false);
+					toast.success(`Utilisateur ${cachedUser.firstName} ajouté au cache`);
 					return;
 				}
 
-				// 2. Si pas dans le cache, fetch depuis l'API
 				console.log("🌐 User non trouvé dans le cache, fetch depuis l'API...");
 				const res = await fetch(`https://dummyjson.com/users/${id}`);
 				
 				if (!res.ok) {
-					// Si l'utilisateur n'existe pas (404), rediriger vers not-found
 					if (res.status === 404) {
 						console.log("❌ User inexistant, redirection vers 404");
+						toast.error("Impossible de charger l'utilisateur depuis le serveur");
 						router.push("/user");
 						return;
 					}
@@ -45,11 +45,13 @@ export default function UserClient() {
 				console.log("✅ User chargé depuis l'API:", user);
 				setCurrentUser(user);
 				setLoading(false);
+				toast.success(`Utilisateur ${user.firstName} chargé depuis le serveur`);
 
 			} catch (err) {
 				console.error("Erreur lors du chargement de l'utilisateur:", err);
 				setError(err instanceof Error ? err.message : "Erreur inconnue");
 				setLoading(false);
+				toast.error("Impossible de charger l'utilisateur");
 			}
 		}
 

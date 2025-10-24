@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { userInterface, userListInterface } from "@/types/userInterface";
+import toast from "react-hot-toast";
 
 export function useUsers() {
 	const [userList, setUsers] = useState<userListInterface | null>(null);
@@ -19,12 +20,15 @@ export function useUsers() {
 			if (!res.ok) throw new Error("Erreur réseau");
 			const data = await res.json();
 			setUsers(data);
+			toast.success(`Utilisateurs chargés depuis le serveur`);
 		} catch (err: any) {
 			const newUserList = fetchLocalUsers();
 			if (newUserList != null) {
 				setUsers(newUserList);
+				toast.success(`Utilisateurs chargés depuis le cache local`);
 			} else {
 				setError(err.message || "Erreur inconnue");
+				toast.error(`Utilisateurs impossibles à charger`);
 			}
 		} finally {
 			setLoading(false);
