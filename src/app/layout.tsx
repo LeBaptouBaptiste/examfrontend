@@ -8,6 +8,9 @@ export const metadata: Metadata = {
 	title: "Examen Frontend",
 	description:
 		"Application Next.js avec gestion des thèmes et liste d'utilisateurs",
+		icons: {
+			icon: "/favicon.png",
+		},
 };
 
 export default function RootLayout({
