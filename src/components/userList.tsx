@@ -1,7 +1,7 @@
 "use client";
 
 import { userListInterface } from "@/types/userInterface";
-import UserCard from "./userCard";
+import UserCard from "@/components/userCard";
 
 export default function UserList({ users }: { users: userListInterface }) {
 	return (

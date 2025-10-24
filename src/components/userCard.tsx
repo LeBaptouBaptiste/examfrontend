@@ -1,10 +1,14 @@
 "use client";
 
 import { userInterface } from "@/types/userInterface";
+import Link from "next/link";
 
 export default function UserCard({ user }: { user: userInterface }) {
 	return (
-		<div className="w-full max-w-xs bg-gray-900 border border-gray-800 rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-fuchsia-500/20 hover:cursor-pointer">
+		<Link
+			href={`/user/${user.id}`}
+			className="w-full max-w-xs bg-gray-900 border border-gray-800 rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-fuchsia-500/20 hover:cursor-pointer"
+		>
 			<div className="flex flex-col items-center p-6">
 				<img
 					src={user.image || "/default-avatar.png"}
@@ -16,6 +20,6 @@ export default function UserCard({ user }: { user: userInterface }) {
 				</h3>
 				<p className="text-sm text-gray-400">{user.email}</p>
 			</div>
-		</div>
+		</Link>
 	);
 }

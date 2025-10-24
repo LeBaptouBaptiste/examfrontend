@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { userListInterface } from "@/types/userInterface";
-import UserList from "./components/userList";
+import UserList from "@/components/userList";
+import Loading from "@/components/Loading";
 
 export default function Home() {
 	const [users, setUsers] = useState<userListInterface>();
@@ -13,7 +14,7 @@ export default function Home() {
 
 	return (
 		<main>
-			<UserList users={users!} />
+      {users ? <UserList users={users} /> : <Loading />}
 		</main>
 	);
 }
