@@ -46,7 +46,11 @@ export default function Home() {
 }
 
 async function fetchData() {
-	const res = await fetch("https://dummyjson.com/users");
-	if (!res.ok) throw new Error("Erreur de réseau");
-	return res.json();
+  try {
+    const res = await fetch("https://dummyjson.com/users");
+    if (!res.ok) throw new Error("Erreur de réseau");
+    return await res.json();
+  } catch (err) {
+    throw err;
+  }
 }
