@@ -21,19 +21,16 @@ export default function UserClient() {
 				const cachedUser = favUsers.find((u: userInterface) => u.id === Number(id));
 				
 				if (cachedUser) {
-					console.log("✅ User chargé depuis le localStorage:", cachedUser);
 					setCurrentUser(cachedUser);
 					setLoading(false);
-					toast.success(`Utilisateur ${cachedUser.firstName} ajouté au cache`);
+					toast.success(`Utilisateur ${cachedUser.firstName} chargé depuis le cache local`);
 					return;
 				}
 
-				console.log("🌐 User non trouvé dans le cache, fetch depuis l'API...");
 				const res = await fetch(`https://dummyjson.com/users/${id}`);
 				
 				if (!res.ok) {
 					if (res.status === 404) {
-						console.log("❌ User inexistant, redirection vers 404");
 						toast.error("Impossible de charger l'utilisateur depuis le serveur");
 						router.push("/user");
 						return;
@@ -42,13 +39,11 @@ export default function UserClient() {
 				}
 
 				const user = await res.json();
-				console.log("✅ User chargé depuis l'API:", user);
 				setCurrentUser(user);
 				setLoading(false);
 				toast.success(`Utilisateur ${user.firstName} chargé depuis le serveur`);
 
 			} catch (err) {
-				console.error("Erreur lors du chargement de l'utilisateur:", err);
 				setError(err instanceof Error ? err.message : "Erreur inconnue");
 				setLoading(false);
 				toast.error("Impossible de charger l'utilisateur");

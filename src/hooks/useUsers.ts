@@ -105,6 +105,11 @@ export function useUsers() {
 				: [...prev, user];
 
 			localStorage.setItem("favUsers", JSON.stringify(updated));
+			toast.success(
+				exists
+					? `Utilisateur ${user.firstName} retiré des favoris`
+					: `Utilisateur ${user.firstName} ajouté aux favoris`
+			);
 			return updated;
 		});
 	}, []);
