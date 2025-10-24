@@ -35,6 +35,55 @@ export default function UserList({ users }: { users: userListInterface }) {
 					/>
 				</div>
 
+				{/* Tri */}
+				<div className="mb-8 flex justify-end">
+					<label className="mr-4 text-sm text-gray-400">Trier par :</label>
+					<select
+						onChange={(e) => {
+							if (e.target.value === "base") {
+								setFilteredUsers(users.users);
+							} else if (e.target.value === "nameAsc") {
+								setFilteredUsers((prev) =>
+									[...prev].sort((a, b) => a.lastName.localeCompare(b.lastName))
+								);
+							} else if (e.target.value === "ageAsc") {
+								setFilteredUsers((prev) =>
+									[...prev].sort((a, b) => a.age - b.age)
+								);
+							} else if (e.target.value === "firstNameAsc") {
+								setFilteredUsers((prev) =>
+									[...prev].sort((a, b) =>
+										a.firstName.localeCompare(b.firstName)
+									)
+								);
+							} else if (e.target.value === "nameDesc") {
+								setFilteredUsers((prev) =>
+									[...prev].sort((a, b) => b.lastName.localeCompare(a.lastName))
+								);
+							} else if (e.target.value === "ageDesc") {
+								setFilteredUsers((prev) =>
+									[...prev].sort((a, b) => b.age - a.age)
+								);
+							} else if (e.target.value === "firstNameDesc") {
+								setFilteredUsers((prev) =>
+									[...prev].sort((a, b) =>
+										b.firstName.localeCompare(a.firstName)
+									)
+								);
+							}
+						}}
+						className="px-3 py-2 border border-gray-700 rounded-lg bg-gray-900 text-gray-100 focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
+					>
+						<option value="base">Sélectionner</option>
+						<option value="nameAsc">Nom croissant</option>
+						<option value="nameDesc">Nom décroissant</option>
+						<option value="firstNameAsc">Prénom croissant</option>
+						<option value="firstNameDesc">Prénom décroissant</option>
+						<option value="ageAsc">Âge croissant</option>
+						<option value="ageDesc">Âge décroissant</option>
+					</select>
+				</div>
+
 				{/* Grille responsive */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 					{filteredUsers.map((user) => (
