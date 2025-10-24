@@ -62,7 +62,7 @@ export default function Home() {
 
 async function fetchData() {
 	try {
-		const res = await fetch("https://dummyjson.com/users");
+		const res = await fetch("https://dummyjson.com/users?limit=1000");
 		if (!res.ok) throw new Error("Erreur de réseau");
 		return await res.json();
 	} catch (err) {
