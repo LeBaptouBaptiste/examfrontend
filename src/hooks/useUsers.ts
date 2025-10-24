@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { userListInterface } from "@/types/userInterface";
+import { userInterface, userListInterface } from "@/types/userInterface";
 
 export function useUsers() {
 	const [userList, setUsers] = useState<userListInterface | null>(null);
@@ -10,6 +10,8 @@ export function useUsers() {
 
 	const [filterText, setFilterText] = useState("");
 	const [sortOption, setSortOption] = useState("base");
+
+	const [favoredUsers, setFavoredUsers] = useState<userInterface[]>([]);
 
 	useEffect(() => {
 		setLoading(true);
@@ -63,6 +65,34 @@ export function useUsers() {
 
 	const totalPages = Math.ceil(sortedUsers.length / limit);
 
+	const toggleFavoredUser =(user: userInterface) => {
+		setFavoredUsers((prev) => {
+			console.log("Current favored users before toggle:", prev);
+
+			const exists = prev.some((u) => u.id === user.id);
+			console.log("User exists in favored list:", exists);
+
+			const updated = exists
+				? prev.filter((u) => u.id !== user.id)
+				: [...prev, user];
+
+			console.log("Updated favored users list:", updated);
+
+			localStorage.setItem("favUsers", JSON.stringify(updated));
+
+			return updated;
+		});
+	};
+
+	useEffect(() => {
+		const favUsers = JSON.parse(localStorage.getItem("favUsers") || "[]");
+		if (Array.isArray(favUsers)) setFavoredUsers(favUsers);
+	}, []);
+
+	useEffect(() => {
+		console.log("🔥 favoredUsers updated:", favoredUsers);
+	}, [favoredUsers]);
+
 	return {
 		userList,
 		loading,
@@ -77,6 +107,8 @@ export function useUsers() {
 		sortedUsers,
 		paginatedUsers,
 		totalPages,
+		favoredUsers,
+		toggleFavoredUser,
 	};
 }
 

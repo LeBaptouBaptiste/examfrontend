@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { userListInterface } from "@/types/userInterface";
 import UserCard from "@/components/userCard";
 import { useUsers } from "@/hooks/useUsers";
 
 export default function UserList() {
 	const [transitioning, setTransitioning] = useState(false);
 
-	const {setFilterText, filterText, sortOption, setSortOption, setPage, page, paginatedUsers, totalPages} = useUsers();
+	const {setFilterText, filterText, sortOption, setSortOption, setPage, page, paginatedUsers, totalPages, favoredUsers, toggleFavoredUser} = useUsers();
 
 	const changePage = (newPage: number) => {
 		setTransitioning(true);
@@ -86,7 +85,7 @@ export default function UserList() {
 					}`}
 				>
 					{paginatedUsers.map((user) => (
-						<UserCard key={user.id} user={user} />
+						<UserCard key={user.id} user={user} isFav={favoredUsers.some(u => u.id === user.id)} onToggleFavorite={toggleFavoredUser}/>
 					))}
 				</div>
 			</div>
