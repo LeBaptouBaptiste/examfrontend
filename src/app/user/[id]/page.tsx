@@ -9,10 +9,39 @@ import UserDetails from "@/components/userDetails";
 export default function UserPage() {
 	const { id } = useParams<{ id: string }>();
 	const [user, setUser] = useState<userInterface | null>(null);
+	const [error, setError] = useState<string | null>(null);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetchUser(parseInt(id)).then((data) => setUser(data));
+		setLoading(true);
+		fetchUser(parseInt(id))
+			.then((data) => {
+				setUser(data);
+				setError(null);
+			})
+			.catch(() => {
+				setError(
+					"Impossible de charger les détails de l'utilisateur. Vérifie ta connexion ou réessaie plus tard."
+				);
+			})
+			.finally(() => setLoading(false));
 	}, [id]);
+
+	if (loading) return <Loading />;
+
+	if (error)
+		return (
+			<main className="min-h-screen flex flex-col items-center justify-center bg-gray-950 text-gray-100 p-6 text-center">
+				<p className="text-fuchsia-400 font-semibold mb-2">Erreur réseau</p>
+				<p className="text-gray-400 mb-6">{error}</p>
+				<button
+					onClick={() => location.reload()}
+					className="px-4 py-2 bg-fuchsia-600 hover:bg-fuchsia-700 rounded-lg text-sm font-medium transition-colors"
+				>
+					Recharger
+				</button>
+			</main>
+		);
 
 	return <main>{user ? <UserDetails user={user} /> : <Loading />}</main>;
 }
