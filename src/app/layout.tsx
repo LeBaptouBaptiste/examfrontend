@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="fr">
-			<body>
+			<body className="transition-colors duration-300">
 				<AppErrorBoundary>
 					{children}
 					<ThemeButton />
