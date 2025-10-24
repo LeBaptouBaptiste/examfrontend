@@ -58,7 +58,7 @@ interface userInterface {
     eyeColor: string;
     hair: hair;
     ip: string;
-    adress: address;
+    address: address;
     macAddress: string;
     university: string;
     bank: bank;

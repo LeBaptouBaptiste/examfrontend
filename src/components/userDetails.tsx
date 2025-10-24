@@ -127,10 +127,10 @@ export default function UserDetails({ user }: { user: userInterface | null }) {
 							Adresse
 						</h3>
 						<p className="text-gray-700 dark:text-gray-300">
-							{user.adress?.address}, {user.adress?.city},{" "}
-							{user.adress?.stateCode} {user.adress?.postalCode}
+							{user.address.address}, {user.address.city},{" "}
+							{user.address.stateCode} {user.address.postalCode}
 							<br />
-							{user.adress?.country}
+							{user.address?.country}
 						</p>
 					</div>
 

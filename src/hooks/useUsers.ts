@@ -57,7 +57,7 @@ export function useUsers() {
 		setLoading(true);
 		setError(null);
 		fetchUsers();
-	}, [fetchUsers, page]);
+	}, [fetchUsers]);
 
 	const filteredUsers = useMemo(() => {
 		if (userList === null) return [];
