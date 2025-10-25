@@ -78,18 +78,15 @@ src/
 ## 🧠 Development Journey
 
 ### 1️⃣ Project Setup
-
 - Created project with `npx create-next-app@latest` using **App Router structure (`src/app/`)**.
 - Installed and configured **TailwindCSS 4** manually, without `tailwind.config.js`.
 - Added **TypeScript** support and type definitions (`@types/react`, `@types/node`).
 
 ### 2️⃣ UI Components
-
 - Designed modular UI with **Tailwind**: cards, pagination, and loading animation.
 - Implemented responsive design using `grid-cols-1 sm:grid-cols-3 lg:grid-cols-5`.
 
 ### 3️⃣ User Fetching
-
 - Data fetched from `https://dummyjson.com/users`.
 - Moved fetching logic into a dedicated **custom hook**: `useUsers()`.
 - Hook handles:
@@ -100,30 +97,25 @@ src/
   - Error handling (`error` + `loading` states)
 
 ### 4️⃣ Favorites System
-
 - Added persistent favorites stored in **localStorage**.
 - Favorite state synchronized globally in `useUsers`.
 - Clicking the ⭐ icon toggles favorite status for any user.
 - Cards visually update instantly, without reload.
 
 ### 5️⃣ Offline Mode
-
 - If the API is unavailable, the app loads the user directly from **localStorage**.
 - Fallback logic implemented in **UserClient**.
 - Works seamlessly offline if users were previously favorited.
 
 ### 6️⃣ Error Handling & Boundaries
-
 - Implemented a custom **ErrorBoundary** for network-level or fetch exceptions.
 - `notFound()` is used for invalid IDs, falling back to `/user/not-found.tsx`.
 
 ### 7️⃣ Loading & Transitions
-
 - Added a global **loading.tsx** page for Next’s route transitions.
 - Created a minimal **Loading** component with spinning animation and pulsing text.
 
 ### 8️⃣ Toast Notifications
-
 - Integrated `react-hot-toast` for success/error feedback:
   - ✅ “User loaded from API”
   - 💾 “User loaded from cache”
@@ -131,13 +123,11 @@ src/
 - Added dark/light styling consistency with Tailwind themes.
 
 ### 9️⃣ Theme System
-
 - Created a **ThemeButton** allowing real-time light/dark switch.
 - Uses Tailwind’s `dark:` variant directly (no context needed).
 - Button visually matches the app’s accent color (fuchsia/purple).
 
 ### 🔟 Favicon & Branding
-
 - Designed and integrated a minimalist favicon representing the app’s purpose:
   - Gradient fuchsia/violet user silhouette on white background.
   - Located in `/public/favicon.png`.
@@ -157,6 +147,128 @@ src/
 | 🌓 Theme | Light/dark theme with transition |
 | 🧱 Error Boundary | Clean fallback for network and route errors |
 | 🔔 Toast Feedback | Success/error notifications with react-hot-toast |
+
+---
+
+## 🧪 Tests & Quality Assurance
+
+### 🧰 Test Stack
+- **Runner:** Vitest  
+- **Testing Library:** React Testing Library  
+- **DOM Matchers:** @testing-library/jest-dom  
+- **Environment:** jsdom  
+
+### ⚙️ Configuration
+Install test dependencies:
+```bash
+npm install --save-dev vitest jsdom @testing-library/react @testing-library/jest-dom
+```
+
+Add a `vitest.config.ts`:
+```ts
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./vitest.setup.ts",
+  },
+});
+```
+
+Then create `vitest.setup.ts`:
+```ts
+import "@testing-library/jest-dom";
+```
+
+### 🧩 Example Test – `useUsers.test.ts`
+```tsx
+import { renderHook, act, waitFor } from "@testing-library/react";
+import { useUsers } from "../useUsers";
+
+global.fetch = vi.fn();
+
+describe("useUsers hook", () => {
+  const mockUser = { id: 1, firstName: "John", lastName: "Doe", email: "john@test.com" };
+  const mockData = { users: [mockUser], total: 1 };
+
+  it("fetches users successfully", async () => {
+    (fetch as any).mockResolvedValueOnce({ ok: true, json: async () => mockData });
+
+    const { result } = renderHook(() => useUsers());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.userList?.users.length).toBe(1);
+  });
+});
+```
+
+Run tests:
+```bash
+npm run test
+```
+
+---
+
+## 🧪 Tests & Quality Assurance
+
+### 🧰 Test Stack
+- **Runner:** Vitest  
+- **Testing Library:** React Testing Library  
+- **DOM Matchers:** @testing-library/jest-dom  
+- **Environment:** jsdom  
+
+### ⚙️ Configuration
+Install test dependencies:
+```bash
+npm install --save-dev vitest jsdom @testing-library/react @testing-library/jest-dom
+```
+
+Add a `vitest.config.ts`:
+```ts
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./vitest.setup.ts",
+  },
+});
+```
+
+Then create `vitest.setup.ts`:
+```ts
+import "@testing-library/jest-dom";
+```
+
+### 🧩 Example Test – `useUsers.test.ts`
+```tsx
+import { renderHook, act, waitFor } from "@testing-library/react";
+import { useUsers } from "../useUsers";
+
+global.fetch = vi.fn();
+
+describe("useUsers hook", () => {
+  const mockUser = { id: 1, firstName: "John", lastName: "Doe", email: "john@test.com" };
+  const mockData = { users: [mockUser], total: 1 };
+
+  it("fetches users successfully", async () => {
+    (fetch as any).mockResolvedValueOnce({ ok: true, json: async () => mockData });
+
+    const { result } = renderHook(() => useUsers());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.userList?.users.length).toBe(1);
+  });
+});
+```
+
+Run tests:
+```bash
+npm run test
+```
 
 ---
 
